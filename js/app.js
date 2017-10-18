@@ -1,5 +1,8 @@
 const numRows = 6;
 const numCols = 5;
+const halfRowHeight = 21.5;
+const bottomOfRow = 83;
+const columnWidth = 101;
 
 // Enemies our player must avoid
 var Enemy = function(LocX, LocY) {
@@ -34,6 +37,8 @@ Enemy.prototype.render = function() {
 class Player{
     constructor(){
         this.sprite = 'images/char-horn-girl.png';
+        this.x = 2 * columnWidth;
+        this.y = (5 * bottomOfRow) - halfRowHeight;
     }
 
     update(){}
@@ -48,24 +53,7 @@ class Player{
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-let halfRowHeight = 21.5;
-let bottomOfRow = 83;
-let columnWidth = 101;
 
-let row1x = 0 * columnWidth;
-let row1y = (0 * bottomOfRow) - halfRowHeight;
-
-let row2x = 1 * columnWidth;
-let row2y = (1 * bottomOfRow) - halfRowHeight;
-
-let row3x = 2 * columnWidth;
-let row3y = (2 * bottomOfRow) - halfRowHeight;
-
-let row4x = 3 * columnWidth;
-let row4y = (3 * bottomOfRow) - halfRowHeight;
-
-let row5x = 4 * columnWidth;
-let row5y = (4 * bottomOfRow) - halfRowHeight;
 
 let player = new Player();
 let allEnemies = [];
