@@ -1,8 +1,10 @@
 const numRows = 6;
 const numCols = 5;
 const halfRowHeight = 21.5;
-const bottomOfRow = 83;
+const rowHeight = 83;
 const columnWidth = 101;
+let deltaX = 0;
+let deltaY = 0;
 
 // Enemies our player must avoid
 var Enemy = function(LocX, LocY) {
@@ -22,8 +24,7 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-
-    // console.log("time delta: " + dt);
+    this.x = this.x + (10 * dt);
 };
 
 // Draw the enemy on the screen, required method for game
@@ -38,23 +39,47 @@ class Player{
     constructor(){
         this.sprite = 'images/char-horn-girl.png';
         this.x = 2 * columnWidth;
-        this.y = (5 * bottomOfRow) - halfRowHeight;
+        this.y = (5 * rowHeight) - halfRowHeight;
     }
 
-    update(){}
+    update(){
+        this.x = this.x + deltaX;
+        this.y = this.y + deltaY;
+
+        // reset to 0 to stop motion
+        deltaX = 0;
+        deltaY = 0;
+    }
 
     render(){
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-    handleInput(){}
+    handleInput(keyCode){
+        switch (keyCode){
+            case "left":
+                deltaX = -columnWidth;
+                deltaY = 0;
+                break;
+            case "right":
+                deltaX = columnWidth;
+                deltaY = 0;
+                break;
+            case "up":
+                deltaX = 0;
+                deltaY = -rowHeight;
+                break;
+            case "down":
+                deltaX = 0;
+                deltaY = rowHeight;
+                break;
+        }
+    }
 }
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
-
 let player = new Player();
 let allEnemies = [];
 
@@ -62,7 +87,7 @@ for (let row = 1; row <numRows-2; row++){
     for (let col = 0; col < numCols; col++) {
 
         let x = col * columnWidth;
-        let y = (row * bottomOfRow) - halfRowHeight;
+        let y = (row * rowHeight) - halfRowHeight;
 
         allEnemies.push(new Enemy(x, y));
     }
