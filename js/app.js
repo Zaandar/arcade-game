@@ -3,6 +3,8 @@ const numCols = 5;
 const halfRowHeight = 21.5;
 const rowHeight = 83;
 const columnWidth = 101;
+const boardWidth = numCols * columnWidth;
+const boardHeight = numRows * rowHeight;
 let deltaX = 0;
 let deltaY = 0;
 
@@ -38,13 +40,21 @@ Enemy.prototype.render = function() {
 class Player{
     constructor(){
         this.sprite = 'images/char-horn-girl.png';
+
         this.x = 2 * columnWidth;
         this.y = (5 * rowHeight) - halfRowHeight;
     }
 
     update(){
-        this.x = this.x + deltaX;
-        this.y = this.y + deltaY;
+        let newX = this.x + deltaX;
+        if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
+            this.x = newX;
+        }
+
+        let newY = this.y + deltaY;
+        if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
+            this.y = newY;
+        }
 
         // reset to 0 to stop motion
         deltaX = 0;
