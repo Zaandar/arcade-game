@@ -1,6 +1,6 @@
 const numRows = 6;
 const numCols = 5;
-const halfRowHeight = 21.5;
+const rowOffset = 21.5;
 const rowHeight = 83;
 const columnWidth = 101;
 const boardWidth = numCols * columnWidth;
@@ -42,18 +42,22 @@ class Player{
         this.sprite = 'images/char-horn-girl.png';
 
         this.x = 2 * columnWidth;
-        this.y = (5 * rowHeight) - halfRowHeight;
+        this.y = (5 * rowHeight) - rowOffset;
     }
 
     update(){
-        let newX = this.x + deltaX;
-        if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
-            this.x = newX;
+        if (deltaX != 0) {
+            let newX = this.x + deltaX;
+            if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
+                this.x = newX;
+            }
         }
 
-        let newY = this.y + deltaY;
-        if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
-            this.y = newY;
+        if(deltaY != 0) {
+            let newY = this.y + deltaY;
+            if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
+                this.y = newY;
+            }
         }
 
         // reset to 0 to stop motion
@@ -97,7 +101,7 @@ for (let row = 1; row <numRows-2; row++){
     for (let col = 0; col < numCols; col++) {
 
         let x = col * columnWidth;
-        let y = (row * rowHeight) - halfRowHeight;
+        let y = (row * rowHeight) - rowOffset;
 
         allEnemies.push(new Enemy(x, y));
     }
