@@ -118,6 +118,9 @@ var Engine = (function(global) {
             numCols = 5,
             row, col;
 
+        // clear all graphics before re-drawing
+        ctx.clearRect(0, 0, canvas.width, (canvas.height + (83/2)));
+
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
