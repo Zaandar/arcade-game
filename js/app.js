@@ -9,7 +9,7 @@ let deltaX = 0;
 let deltaY = 0;
 
 // Enemies our player must avoid
-var Enemy = function(LocX, LocY) {
+let Enemy = function(LocX, LocY) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -46,14 +46,14 @@ class Player{
     }
 
     update(){
-        if (deltaX != 0) {
+        if (deltaX !== 0) {
             let newX = this.x + deltaX;
             if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
                 this.x = newX;
             }
         }
 
-        if(deltaY != 0) {
+        if(deltaY !== 0) {
             let newY = this.y + deltaY;
             if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
                 this.y = newY;
@@ -69,7 +69,7 @@ class Player{
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-    handleInput(keyCode){
+    static handleInput(keyCode){
         switch (keyCode){
             case "left":
                 deltaX = -columnWidth;
@@ -112,12 +112,12 @@ console.log(allEnemies);
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
+    let allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',
         40: 'down'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    Player.handleInput(allowedKeys[e.keyCode]);
 });
