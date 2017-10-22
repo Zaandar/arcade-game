@@ -128,8 +128,8 @@ function checkForCollision(player) {
         // go through all enemies and check the distances
         // (x and y) from the player. If too close => collision!
         allEnemies.forEach(function (enemy) {
-            if ((Math.abs(player.x - enemy.x) < 50) &&
-                (Math.abs(player.y - enemy.y) < 50)) {
+            if ((Math.abs(player.x - enemy.x) < 60) &&
+                (Math.abs(player.y - enemy.y) < 60)) {
                 // todo do something flashy
                 // reset player/game
                 player.x = player.initialX;
