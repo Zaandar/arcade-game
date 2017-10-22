@@ -125,6 +125,8 @@ function createEnemyRows() {
 function checkForCollision(player) {
     // has player collided with enemy?
     if (player != null) {
+        // go through all enemies and check the distances
+        // (x and y) from the player. If too close => collision!
         allEnemies.forEach(function (enemy) {
             if ((Math.abs(player.x - enemy.x) < 50) &&
                 (Math.abs(player.y - enemy.y) < 50)) {
