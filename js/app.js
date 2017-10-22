@@ -12,7 +12,7 @@ let deltaY = 0;
 let allEnemies = [];
 let grid = [];
 
-
+// generate a random number within a given range
 function generateRandomInRange(min, max) {
     let rand = Math.random() * (max - min) + min;
     return rand;
@@ -25,9 +25,13 @@ class Enemy {
         // The image/sprite for our enemies, this uses
         // a helper we've provided to easily load images
         this.sprite = 'images/enemy-bug.png';
+
+        // the enemy's current location
         this.x = locX;
         this.y = locY;
-        this.speedMultiplier = generateRandomInRange(130, 200);
+
+        // random speed for each enemy
+        this.speedMultiplier = generateRandomInRange(100, 200);
     }
 
     // Update the enemy's position
@@ -49,15 +53,20 @@ class Enemy {
 
 // Our player
 class Player {
-
     constructor() {
+        // default location for player
         this.initialX = 2 * columnWidth;
         this.initialY = (5 * rowHeight) - rowOffset;
+
+        // the image for our player
         this.sprite = 'images/char-horn-girl.png';
+
+        // the player's current location
         this.x = this.initialX;
         this.y = this.initialY;
     }
 
+    // generate offset for each key press
     static handleInput(keyCode) {
         switch (keyCode) {
             case "left":
@@ -116,13 +125,13 @@ class Player {
     render() {
         /* additional images courtesy of https://pixabay.com. water-311139_640.png and
         cross-296507_640.png resized and renamed for convenience*/
-        if (!won && !lost){
+        if (!won && !lost) {
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
         else if (won) {
             ctx.drawImage(Resources.get('images/water_splash.png'), player.x, player.y + 70);
         }
-        else if (lost){
+        else if (lost) {
             ctx.drawImage(Resources.get('images/red_x.png'), player.x, player.y + 70);
         }
 
@@ -133,6 +142,7 @@ let player = new Player();
 
 createEnemyRows();
 
+// bugs are only on the concrete tiles
 function createEnemyRows() {
     for (let row = 1; row < numRows - 2; row++) {
         let y = (row * rowHeight) - rowOffset;
@@ -140,8 +150,8 @@ function createEnemyRows() {
     }
 }
 
+// has player collided with enemy?
 function checkForCollision() {
-    // has player collided with enemy?
     if (player != null) {
         // go through all enemies and check the distances
         // (x and y) from the player. If too close => collision!
@@ -149,8 +159,11 @@ function checkForCollision() {
             if ((Math.abs(player.x - enemy.x) < 60) &&
                 (Math.abs(player.y - enemy.y) < 60)) {
                 lost = true;
-                var audio = new Audio('sound/NFF-lose.wav'); /* sounds courtesy of http://www.noiseforfun.com*/
+
+                /* sounds courtesy of http://www.noiseforfun.com */
+                var audio = new Audio('sound/NFF-lose.wav');
                 audio.play();
+
                 // reset player/game
                 setTimeout(resetPlayer, 700);
             }
@@ -164,8 +177,11 @@ function checkForWin() {
         if (player.y < (rowHeight - rowOffset)) {
             // display splash image
             won = true;
-            var audio = new Audio('sound/NFF-twinkle.wav'); /* sounds courtesy of http://www.noiseforfun.com*/
+
+            /* sounds courtesy of http://www.noiseforfun.com*/
+            var audio = new Audio('sound/NFF-twinkle.wav');
             audio.play();
+
             // reset player/game
             setTimeout(resetPlayer, 1000);
         }
@@ -186,6 +202,7 @@ function createEnemy() {
     // add enemy
     allEnemies.push(new Enemy(0, grid[row]));
 
+    // clean up old bugs 
     if (allEnemies.length > 25) {
         allEnemies.shift();
     }
