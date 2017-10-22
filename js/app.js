@@ -46,11 +46,13 @@ class Enemy {
 
 // Our player
 class Player {
-    constructor() {
-        this.sprite = 'images/char-horn-girl.png';
 
-        this.x = 2 * columnWidth;
-        this.y = (5 * rowHeight) - rowOffset;
+    constructor() {
+        this.initialX = 2 * columnWidth;
+        this.initialY = (5 * rowHeight) - rowOffset;
+        this.sprite = 'images/char-horn-girl.png';
+        this.x = this.initialX;
+        this.y = this.initialY;
     }
 
     static handleInput(keyCode) {
@@ -75,19 +77,29 @@ class Player {
     }
 
     update() {
+        // if the player moved along x, calculate their new location
         if (deltaX !== 0) {
             let newX = this.x + deltaX;
+
+            // if their new location is inside the board, set the
+            // player's new location
             if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
                 this.x = newX;
             }
         }
 
+        // if the player moved along y, calculate their new location
         if (deltaY !== 0) {
             let newY = this.y + deltaY;
+
+            // if their new location is inside the board, set the
+            // player's new location
             if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
                 this.y = newY;
             }
         }
+
+        checkForCollision(this);
 
         // reset to 0 to stop motion
         deltaX = 0;
@@ -107,6 +119,21 @@ function createEnemyRows() {
     for (let row = 1; row < numRows - 2; row++) {
         let y = (row * rowHeight) - rowOffset;
         grid.push(y);
+    }
+}
+
+function checkForCollision(player) {
+    // has player collided with enemy?
+    if (player != null) {
+        allEnemies.forEach(function (enemy) {
+            if ((Math.abs(player.x - enemy.x) < 50) &&
+                (Math.abs(player.y - enemy.y) < 50)) {
+                // todo do something flashy
+                // reset player/game
+                player.x = player.initialX;
+                player.y = player.initialY;
+            }
+        });
     }
 }
 
