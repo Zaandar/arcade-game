@@ -6,6 +6,7 @@ const columnWidth = 101;
 const boardWidth = numCols * columnWidth;
 const boardHeight = numRows * rowHeight;
 let won = false;
+let lost = false;
 let deltaX = 0;
 let deltaY = 0;
 let allEnemies = [];
@@ -43,7 +44,6 @@ class Enemy {
     // Draw the enemy on the screen, required method for game
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        // ctx.drawImage(Resources.get('images/Heart.png'), this.x, player.y);
     }
 }
 
@@ -80,44 +80,50 @@ class Player {
     }
 
     update() {
-        // if the player moved along x, calculate their new location
-        if (deltaX !== 0) {
-            let newX = this.x + deltaX;
+        if (!won && !lost) {
+            // if the player moved along x, calculate their new location
+            if (deltaX !== 0) {
+                let newX = this.x + deltaX;
 
-            // if their new location is inside the board, set the
-            // player's new location
-            if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
-                this.x = newX;
+                // if their new location is inside the board, set the
+                // player's new location
+                if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
+                    this.x = newX;
+                }
             }
-        }
 
-        // if the player moved along y, calculate their new location
-        if (deltaY !== 0) {
-            let newY = this.y + deltaY;
+            // if the player moved along y, calculate their new location
+            if (deltaY !== 0) {
+                let newY = this.y + deltaY;
 
-            // if their new location is inside the board, set the
-            // player's new location
-            if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
-                this.y = newY;
+                // if their new location is inside the board, set the
+                // player's new location
+                if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
+                    this.y = newY;
+                }
             }
+
+            checkForCollision();
+
+            checkForWin();
+
+            // reset to 0 to stop motion
+            deltaX = 0;
+            deltaY = 0;
         }
-
-        checkForCollision();
-
-        checkForWin();
-
-        // reset to 0 to stop motion
-        deltaX = 0;
-        deltaY = 0;
     }
 
     render() {
-
-        if (!won){
+        /* additional images courtesy of https://pixabay.com. water-311139_640.png and
+        cross-296507_640.png resized and renamed for convenience*/
+        if (!won && !lost){
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
-        else {
+        else if (won) {
             ctx.drawImage(Resources.get('images/water_splash.png'), player.x, player.y + 70);
+        }
+        else if (lost){
+            ctx.drawImage(Resources.get('images/red_x.png'), player.x, player.y + 70);
         }
 
     }
@@ -142,9 +148,11 @@ function checkForCollision() {
         allEnemies.forEach(function (enemy) {
             if ((Math.abs(player.x - enemy.x) < 60) &&
                 (Math.abs(player.y - enemy.y) < 60)) {
-                // todo do something flashy
+                lost = true;
+                var audio = new Audio('sound/NFF-lose.wav'); /* sounds courtesy of http://www.noiseforfun.com*/
+                audio.play();
                 // reset player/game
-                resetPlayer();
+                setTimeout(resetPlayer, 700);
             }
         });
     }
@@ -154,16 +162,19 @@ function checkForWin() {
     // has player collided with enemy?
     if (player != null) {
         if (player.y < (rowHeight - rowOffset)) {
-            // todo do something flashy
+            // display splash image
             won = true;
+            var audio = new Audio('sound/NFF-twinkle.wav'); /* sounds courtesy of http://www.noiseforfun.com*/
+            audio.play();
             // reset player/game
-            setTimeout(resetPlayer, 2000);
+            setTimeout(resetPlayer, 1000);
         }
     }
 }
 
 function resetPlayer() {
     won = false;
+    lost = false;
     player.x = player.initialX;
     player.y = player.initialY;
 }
