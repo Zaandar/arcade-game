@@ -5,10 +5,12 @@ const rowHeight = 83;
 const columnWidth = 101;
 const boardWidth = numCols * columnWidth;
 const boardHeight = numRows * rowHeight;
+let won = false;
 let deltaX = 0;
 let deltaY = 0;
 let allEnemies = [];
 let grid = [];
+
 
 function generateRandomInRange(min, max) {
     let rand = Math.random() * (max - min) + min;
@@ -41,6 +43,7 @@ class Enemy {
     // Draw the enemy on the screen, required method for game
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        // ctx.drawImage(Resources.get('images/Heart.png'), this.x, player.y);
     }
 }
 
@@ -99,7 +102,9 @@ class Player {
             }
         }
 
-        checkForCollision(this);
+        checkForCollision();
+
+        checkForWin();
 
         // reset to 0 to stop motion
         deltaX = 0;
@@ -107,7 +112,14 @@ class Player {
     }
 
     render() {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+
+        if (!won){
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }
+        else {
+            ctx.drawImage(Resources.get('images/water_splash.png'), player.x, player.y + 70);
+        }
+
     }
 }
 
@@ -122,7 +134,7 @@ function createEnemyRows() {
     }
 }
 
-function checkForCollision(player) {
+function checkForCollision() {
     // has player collided with enemy?
     if (player != null) {
         // go through all enemies and check the distances
@@ -132,11 +144,28 @@ function checkForCollision(player) {
                 (Math.abs(player.y - enemy.y) < 60)) {
                 // todo do something flashy
                 // reset player/game
-                player.x = player.initialX;
-                player.y = player.initialY;
+                resetPlayer();
             }
         });
     }
+}
+
+function checkForWin() {
+    // has player collided with enemy?
+    if (player != null) {
+        if (player.y < (rowHeight - rowOffset)) {
+            // todo do something flashy
+            won = true;
+            // reset player/game
+            setTimeout(resetPlayer, 2000);
+        }
+    }
+}
+
+function resetPlayer() {
+    won = false;
+    player.x = player.initialX;
+    player.y = player.initialY;
 }
 
 function createEnemy() {
