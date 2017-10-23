@@ -1,10 +1,15 @@
-const numRows = 6;
-const numCols = 5;
-const rowOffset = 21.5;
-const rowHeight = 83;
-const columnWidth = 101;
-const boardWidth = numCols * columnWidth;
-const boardHeight = numRows * rowHeight;
+const NUM_ROWS = 6;
+const NUM_COLS = 5;
+const ROW_OFFSET = 21.5;
+const ROW_HEIGHT = 83;
+const COLUMN_WIDTH = 101;
+const BOARD_WIDTH = NUM_COLS * COLUMN_WIDTH;
+const BOARD_HEIGHT = NUM_ROWS * ROW_HEIGHT;
+
+// default location for player
+const INITIAL_PLAYER_X = 2 * COLUMN_WIDTH;
+const INITIAL_PLAYER_Y = (5 * ROW_HEIGHT) - ROW_OFFSET;
+
 let won = false;
 let lost = false;
 let deltaX = 0;
@@ -12,80 +17,62 @@ let deltaY = 0;
 let allEnemies = [];
 let grid = [];
 
+
 // generate a random number within a given range
 function generateRandomInRange(min, max) {
-    let rand = Math.random() * (max - min) + min;
-    return rand;
+    return Math.random() * (max - min) + min;
+}
+
+class GameEntity{
+    constructor(locX, locY, image){
+        // The image/sprite for our entity, this uses
+        // a helper we've provided to easily load images
+        this.sprite = image;
+
+        // the entity's current location
+        this.x = locX;
+        this.y = locY;
+    }
+
+    // Update the enemy's position
+    // Parameter: dt, a time delta between ticks
+    // Multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+    update(dt){
+        throw new Error('Function must be implemented in inherited class');
+    };
+
+    // Draw the enemy on the screen, required method for game
+    render(){
+        throw new Error('Function must be implemented in inherited class');
+    };
 }
 
 // Enemies our player must avoid
-class Enemy {
-    constructor(locX, locY) {
-
-        // The image/sprite for our enemies, this uses
-        // a helper we've provided to easily load images
-        this.sprite = 'images/enemy-bug.png';
-
-        // the enemy's current location
-        this.x = locX;
-        this.y = locY;
+class Enemy extends GameEntity{
+    constructor(locX, locY, image) {
+        super(locX, locY, image);
 
         // random speed for each enemy
         this.speedMultiplier = generateRandomInRange(100, 200);
     }
 
-    // Update the enemy's position
-    // Parameter: dt, a time delta between ticks
     update(dt) {
-        // Multiply any movement by the dt parameter
-        // which will ensure the game runs at the same speed for
-        // all computers.
-        if (this.speedMultiplier != null) {
+        if (this.speedMultiplier !== null) {
             this.x = this.x + (this.speedMultiplier * dt);
         }
     }
 
-    // Draw the enemy on the screen, required method for game
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 }
 
 // Our player
-class Player {
-    constructor() {
-        // default location for player
-        this.initialX = 2 * columnWidth;
-        this.initialY = (5 * rowHeight) - rowOffset;
-
-        // the image for our player
-        this.sprite = 'images/char-horn-girl.png';
-
-        // the player's current location
-        this.x = this.initialX;
-        this.y = this.initialY;
-    }
-
-    // generate offset for each key press
-    static handleInput(keyCode) {
-        switch (keyCode) {
-            case "left":
-                deltaX = -columnWidth;
-                deltaY = 0;
-                break;
-            case "right":
-                deltaX = columnWidth;
-                deltaY = 0;
-                break;
-            case "up":
-                deltaX = 0;
-                deltaY = -rowHeight;
-                break;
-            case "down":
-                deltaX = 0;
-                deltaY = rowHeight;
-                break;
-        }
+class Player extends GameEntity{
+    constructor(image) {
+        super(INITIAL_PLAYER_X, INITIAL_PLAYER_Y, image);
     }
 
     update() {
@@ -96,7 +83,7 @@ class Player {
 
                 // if their new location is inside the board, set the
                 // player's new location
-                if (newX >= 0 && newX <= (boardWidth - columnWidth)) {
+                if (newX >= 0 && newX <= (BOARD_WIDTH - COLUMN_WIDTH)) {
                     this.x = newX;
                 }
             }
@@ -107,7 +94,7 @@ class Player {
 
                 // if their new location is inside the board, set the
                 // player's new location
-                if (newY >= (0 - rowHeight) && newY <= (boardHeight - rowHeight)) {
+                if (newY >= (0 - ROW_HEIGHT) && newY <= (BOARD_HEIGHT - ROW_HEIGHT)) {
                     this.y = newY;
                 }
             }
@@ -124,7 +111,7 @@ class Player {
 
     render() {
         /* additional images courtesy of https://pixabay.com. water-311139_640.png and
-        cross-296507_640.png resized and renamed for convenience*/
+        cross-296507_640.png re-sized and renamed for convenience*/
         if (!won && !lost) {
             ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
         }
@@ -134,25 +121,46 @@ class Player {
         else if (lost) {
             ctx.drawImage(Resources.get('images/red_x.png'), player.x, player.y + 70);
         }
+    }
 
+    // generate offset for each key press
+    static handleInput(keyCode) {
+        switch (keyCode) {
+            case "left":
+                deltaX = -COLUMN_WIDTH;
+                deltaY = 0;
+                break;
+            case "right":
+                deltaX = COLUMN_WIDTH;
+                deltaY = 0;
+                break;
+            case "up":
+                deltaX = 0;
+                deltaY = -ROW_HEIGHT;
+                break;
+            case "down":
+                deltaX = 0;
+                deltaY = ROW_HEIGHT;
+                break;
+        }
     }
 }
 
-let player = new Player();
+let player = new Player('images/char-horn-girl.png');
 
 createEnemyRows();
 
 // bugs are only on the concrete tiles
 function createEnemyRows() {
-    for (let row = 1; row < numRows - 2; row++) {
-        let y = (row * rowHeight) - rowOffset;
+    for (let row = 1; row < NUM_ROWS - 2; row++) {
+        let y = (row * ROW_HEIGHT) - ROW_OFFSET;
         grid.push(y);
     }
 }
 
 // has player collided with enemy?
 function checkForCollision() {
-    if (player != null) {
+    if (player !== null) {
         // go through all enemies and check the distances
         // (x and y) from the player. If too close => collision!
         allEnemies.forEach(function (enemy) {
@@ -161,7 +169,7 @@ function checkForCollision() {
                 lost = true;
 
                 /* sounds courtesy of http://www.noiseforfun.com */
-                var audio = new Audio('sound/NFF-lose.wav');
+                let audio = new Audio('sound/NFF-lose.wav');
                 audio.play();
 
                 // reset player/game
@@ -173,13 +181,13 @@ function checkForCollision() {
 
 function checkForWin() {
     // has player collided with enemy?
-    if (player != null) {
-        if (player.y < (rowHeight - rowOffset)) {
+    if (player !== null) {
+        if (player.y < (ROW_HEIGHT - ROW_OFFSET)) {
             // display splash image
             won = true;
 
             /* sounds courtesy of http://www.noiseforfun.com*/
-            var audio = new Audio('sound/NFF-twinkle.wav');
+            let audio = new Audio('sound/NFF-twinkle.wav');
             audio.play();
 
             // reset player/game
@@ -191,8 +199,8 @@ function checkForWin() {
 function resetPlayer() {
     won = false;
     lost = false;
-    player.x = player.initialX;
-    player.y = player.initialY;
+    player.x = INITIAL_PLAYER_X;
+    player.y = INITIAL_PLAYER_Y;
 }
 
 function createEnemy() {
@@ -200,13 +208,13 @@ function createEnemy() {
     let row = Math.floor(generateRandomInRange(0, 3));
 
     // add enemy
-    allEnemies.push(new Enemy(0, grid[row]));
+    allEnemies.push(new Enemy(0, grid[row], 'images/enemy-bug.png'));
 
-    // clean up old bugs 
+    // clean up old bugs
     if (allEnemies.length > 25) {
         allEnemies.shift();
     }
-};
+}
 
 // generate an enemy every few fractions of a second
 let seconds = generateRandomInRange(.5, .75) * 1000;

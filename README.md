@@ -1,5 +1,8 @@
 # Frogger clone arcade game
 
+## To Start Game
+Double-click on the index.hmtl file. The game will open in the default browser.
+
 ##Controls
 Using the arrow keys, your player can move *up*, *down*, *left*, and *right*.
 
